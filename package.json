@@ -1,0 +1,21 @@
+{
+  "name": "silverstripe-inertia",
+  "version": "0.1.0",
+  "description": "Inertia.js adapter for Silverstripe.",
+  "private": "true",
+  "keywords": [
+    "Silverstripe",
+    "Inertia"
+  ],
+  "license": "MIT",
+  "author": "Cameron Bryers",
+  "dependencies": {
+    "@changesets/cli": "^2.26.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/types": "^17.4.4",
+    "husky": "^8.0.3"
+  }
+}
