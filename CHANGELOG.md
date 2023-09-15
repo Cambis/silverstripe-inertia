@@ -1,5 +1,11 @@
 # silverstripe-inertia
 
+## 0.1.2
+
+### Patch Changes
+
+- ef2fe19: Fix typo in readme
+
 ## 0.1.1
 
 ### Patch Changes
