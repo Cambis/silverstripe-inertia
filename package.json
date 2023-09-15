@@ -1,6 +1,6 @@
 {
   "name": "silverstripe-inertia",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inertia.js adapter for Silverstripe.",
   "private": "true",
   "keywords": [
