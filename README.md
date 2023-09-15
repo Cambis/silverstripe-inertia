@@ -48,7 +48,7 @@ SilverStripe\Core\Injector\Injector:
 
 PageController:
   extensions:
-    - Cambis\Inertia\Extension\InertiaControllerMenuExtension
+    - Cambis\Inertia\Extension\InertiaPageControllerExtension
 ```
 
 #### Template
