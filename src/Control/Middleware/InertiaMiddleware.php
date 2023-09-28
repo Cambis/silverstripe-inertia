@@ -43,9 +43,6 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var HTTPResponse $response */
         $response = $delegate($request);
 
-        // $response->addHeader('Vary', 'any');
-        // $response->addHeader('X-Inertia', true);
-
         if (!$request->getHeader('X-Inertia')) {
             return $response;
         }

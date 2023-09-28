@@ -3,12 +3,12 @@
 namespace Cambis\Inertia\Extension;
 
 use Cambis\Inertia\Inertia;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
 /**
- * @property \Cambis\Inertia\Inertia $inertia
+ * @property Inertia $inertia
  */
-class InertiaPageControllerExtension extends DataExtension
+class InertiaPageControllerExtension extends Extension
 {
     private static array $dependencies = [
         'inertia' => '%$' . Inertia::class,
