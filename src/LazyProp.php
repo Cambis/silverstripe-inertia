@@ -19,8 +19,8 @@ class LazyProp
         $this->callback = $callback;
     }
 
-    public function __invoke(): void
+    public function __invoke()
     {
-        call_user_func($this->callback);
+        return call_user_func($this->callback);
     }
 }

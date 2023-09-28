@@ -17,6 +17,10 @@ class InertiaTemplateProvider implements TemplateGlobalProvider
                 'method' => 'inertia_body',
                 'casting' => 'HTMLFragment',
             ],
+            'InertiaBody' => [
+                'method' => 'inertia_body',
+                'casting' => 'HTMLFragment',
+            ],
             'InertiaHead' => [
                 'method' => 'inertia_head',
                 'casting' => 'HTMLFragment',

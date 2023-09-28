@@ -70,7 +70,7 @@ In your `Page.ss` file, add:
 Configure your PageController to serve Inertia.
 ```php
 public function index($request) {
-    $this->inertia->render('my-component', ['prop' => 'value']);
+    return $this->inertia->render('my-component', ['prop' => 'value']);
 }
 ```
 
