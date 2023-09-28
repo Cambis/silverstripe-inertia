@@ -1,5 +1,11 @@
 # silverstripe-inertia
 
+## 0.2.0
+
+### Minor Changes
+
+- c152bfe: Add tests, update docs
+
 ## 0.1.2
 
 ### Patch Changes
