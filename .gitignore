@@ -9,3 +9,5 @@ yarn.lock
 docker/
 docker-compose.yml
 .phpunit.result.cache
+public/
+.vscode/
