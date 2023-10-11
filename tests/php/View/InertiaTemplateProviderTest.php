@@ -8,6 +8,9 @@ use SilverStripe\View\SSViewer;
 
 class InertiaTemplateProviderTest extends SapphireTest
 {
+    /**
+     * @return array<array<string>>
+     */
     public function templateGlobalVariablesProvider(): array
     {
         return [

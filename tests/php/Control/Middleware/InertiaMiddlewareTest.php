@@ -36,7 +36,7 @@ class InertiaMiddlewareTest extends SapphireTest
         $request = new HTTPRequest('GET', '/');
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function ($request) use ($response) {
             return $response;
         };
 
@@ -52,12 +52,12 @@ class InertiaMiddlewareTest extends SapphireTest
         $this->middleware->expects($this->once())->method('version');
 
         $request = (new HTTPRequest('GET', '/'))
-            ->addHeader('X-Inertia', true)
+            ->addHeader('X-Inertia', 'true')
             ->addHeader('X-Inertia-Version', 'foo');
 
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function ($request) use ($response) {
             return $response;
         };
 
@@ -67,6 +67,9 @@ class InertiaMiddlewareTest extends SapphireTest
         $this->assertSame($result->getStatusCode(), 200);
     }
 
+    /**
+     * @return array<array<string>>
+     */
     public function inertiaRedirectProvider(): array
     {
         return [
@@ -82,13 +85,13 @@ class InertiaMiddlewareTest extends SapphireTest
     public function testInertiaRedirect(string $httpMethod): void
     {
         $request = (new HTTPRequest($httpMethod, '/'))
-            ->addHeader('X-Inertia', true)
+            ->addHeader('X-Inertia', 'true')
             ->addHeader('X-Inertia-Version', 'foo');
 
         $response = HTTPResponse::create()
             ->setStatusCode(302);
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function ($request) use ($response) {
             return $response;
         };
 
@@ -103,12 +106,12 @@ class InertiaMiddlewareTest extends SapphireTest
         $this->middleware->expects($this->once())->method('version');
 
         $request = (new HTTPRequest('GET', '/'))
-            ->addHeader('X-Inertia', true)
+            ->addHeader('X-Inertia', 'true')
             ->addHeader('X-Inertia-Version', 'bar');
 
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function ($request) use ($response) {
             return $response;
         };
 

@@ -13,8 +13,14 @@ use SilverStripe\Dev\TestOnly;
  */
 class TestController extends Controller implements TestOnly
 {
+    /**
+     * @config
+     */
     private static string $url_segment = 'TestController';
 
+    /**
+     * @config
+     */
     private static array $extensions = [
         InertiaPageControllerExtension::class,
     ];

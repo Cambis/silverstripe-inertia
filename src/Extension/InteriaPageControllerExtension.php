@@ -10,6 +10,9 @@ use SilverStripe\Core\Extension;
  */
 class InertiaPageControllerExtension extends Extension
 {
+    /**
+     * @config
+     */
     private static array $dependencies = [
         'inertia' => '%$' . Inertia::class,
     ];

@@ -31,7 +31,7 @@ class InertiaTest extends FunctionalTest
 
         $themeDir = substr(__DIR__, strlen(FRAMEWORK_DIR)) . '/InertiaTest/';
         $themes = [
-            "cambis/silverstripe-inertia:{$themeDir}",
+            'cambis/silverstripe-inertia:' . $themeDir,
             SSViewer::DEFAULT_THEME,
         ];
         SSViewer::set_themes($themes);
@@ -69,7 +69,7 @@ class InertiaTest extends FunctionalTest
     {
         $params = http_build_query(['props' => ['foo' => 'bar']]);
         $response = $this->get('TestController?' . $params, null, ['X-Inertia' => true]);
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(['foo' => 'bar'], $data['props']);
     }
@@ -80,17 +80,19 @@ class InertiaTest extends FunctionalTest
 
         $params = http_build_query(['props' => ['foo' => 'bar']]);
         $response = $this->get('TestController?' . $params, null, ['X-Inertia' => true]);
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(['baz' => 'foobar', 'foo' => 'bar'], $data['props']);
     }
 
     public function testClosureProps(): void
     {
-        $this->inertia->share('foo', fn () => 'bar');
+        $this->inertia->share('foo', static function (): string {
+            return 'bar';
+        });
 
         $response = $this->get('TestController', null, ['X-Inertia' => true]);
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(['foo' => 'bar'], $data['props']);
     }
@@ -134,7 +136,7 @@ class InertiaTest extends FunctionalTest
         }
 
         $response = $this->get('TestController', null, ['X-Inertia' => true]);
-        $data = json_decode($response->getBody(), false);
+        $data = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
         $responseProps = (array) $data->props;
 
         $this->assertIsInt($responseProps['integer']);

@@ -3,7 +3,7 @@ includes:
 parameters:
   ignoreErrors:
     - '#Property [a-zA-Z0-9\\_]+::\$(dependencies|extensions) type has no value type specified in iterable type array.#'
-  level: 9
+  level: 8
   paths:
     - src
     - tests

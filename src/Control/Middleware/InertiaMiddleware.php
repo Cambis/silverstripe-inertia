@@ -20,12 +20,17 @@ class InertiaMiddleware implements HTTPMiddleware
         }
 
         $manifestPath = BASE_PATH . $manifestFile;
+        $manifestFileMd5 = '';
 
-        if (file_exists($manifestPath ?? '')) {
-            return md5_file($manifestPath ?? '');
+        if (file_exists($manifestPath)) {
+            $manifestFileMd5 = md5_file($manifestPath);
         }
 
-        return null;
+        if (!is_string($manifestFileMd5)) {
+            return null;
+        }
+
+        return $manifestFileMd5;
     }
 
     /**

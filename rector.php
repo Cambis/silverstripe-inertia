@@ -12,6 +12,8 @@ use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 
 return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->autoloadPaths([]);
+
     $rectorConfig->paths([
         __DIR__ . '/_config.php',
         __DIR__ . '/src',
