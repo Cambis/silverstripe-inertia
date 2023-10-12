@@ -8,7 +8,7 @@ class LazyProp
 {
     use Injectable;
 
-    /** @var (callable(): mixed) */
+    /** @var callable(): mixed */
     private $callback;
 
     /**

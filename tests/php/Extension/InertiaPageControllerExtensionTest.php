@@ -6,11 +6,10 @@ use Cambis\Inertia\Inertia;
 use Cambis\Inertia\Tests\TestController;
 use SilverStripe\Dev\SapphireTest;
 
-/**
- * @property TestController $controller
- */
 class InertiaPageControllerExtensionTest extends SapphireTest
 {
+    protected TestController $controller;
+
     protected function setUp(): void
     {
         parent::setUp();

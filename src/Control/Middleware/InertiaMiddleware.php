@@ -3,6 +3,8 @@
 namespace Cambis\Inertia\Control\Middleware;
 
 use Cambis\Inertia\Inertia;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
@@ -19,7 +21,8 @@ class InertiaMiddleware implements HTTPMiddleware
             return null;
         }
 
-        $manifestPath = BASE_PATH . $manifestFile;
+        $manifestPath = Controller::join_links(Director::baseFolder(), $manifestFile);
+
         $manifestFileMd5 = '';
 
         if (file_exists($manifestPath)) {

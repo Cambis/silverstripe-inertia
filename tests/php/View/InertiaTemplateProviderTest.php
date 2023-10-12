@@ -2,7 +2,9 @@
 
 namespace Cambis\Inertia\Tests\View;
 
+use Cambis\Inertia\Inertia;
 use Cambis\Inertia\View\InertiaTemplateProvider;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\View\SSViewer;
 
@@ -32,6 +34,16 @@ class InertiaTemplateProviderTest extends SapphireTest
         );
     }
 
+    public function testInertiaHead(): void
+    {
+        $template = SSViewer::execute_string(
+            "\$InertiaHead('')",
+            ''
+        );
+
+        $this->assertEmpty($template);
+    }
+
     public function testInertiaBody(): void
     {
         $template = SSViewer::execute_string(
@@ -40,5 +52,14 @@ class InertiaTemplateProviderTest extends SapphireTest
         );
 
         $this->assertSame("<div id='app' data-page=''></div>", $template);
+    }
+
+    public function testIsSSR(): void
+    {
+        Config::modify()->set(Inertia::class, 'ssr_enabled', true);
+        $this->assertTrue(InertiaTemplateProvider::is_ssr());
+
+        Config::modify()->set(Inertia::class, 'ssr_enabled', false);
+        $this->assertFalse(InertiaTemplateProvider::is_ssr());
     }
 }

@@ -2,13 +2,18 @@
 
 namespace Cambis\Inertia\Tests;
 
+use ArrayObject;
 use Cambis\Inertia\Inertia;
+use DateTime;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\View\SSViewer;
+use stdClass;
 
 class InertiaTest extends FunctionalTest
 {
@@ -56,7 +61,7 @@ class InertiaTest extends FunctionalTest
 
     public function testJsonResponse(): void
     {
-        $response = $this->get('TestController', null, ['X-Inertia' => true]);
+        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
 
         $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 200);
@@ -68,7 +73,7 @@ class InertiaTest extends FunctionalTest
     public function testProps(): void
     {
         $params = http_build_query(['props' => ['foo' => 'bar']]);
-        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => true]);
+        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => 'true']);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(['foo' => 'bar'], $data['props']);
@@ -79,9 +84,11 @@ class InertiaTest extends FunctionalTest
         $this->inertia->share('baz', 'foobar');
 
         $params = http_build_query(['props' => ['foo' => 'bar']]);
-        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => true]);
+        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => 'true']);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
+        $this->assertSame('foobar', $this->inertia->getShared('baz'));
+        $this->assertSame(['baz' => 'foobar'], $this->inertia->getShared());
         $this->assertSame(['baz' => 'foobar', 'foo' => 'bar'], $data['props']);
     }
 
@@ -91,7 +98,42 @@ class InertiaTest extends FunctionalTest
             return 'bar';
         });
 
-        $response = $this->get('TestController', null, ['X-Inertia' => true]);
+        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertSame(['foo' => 'bar'], $data['props']);
+    }
+
+    public function testLazyProps(): void
+    {
+        $this->inertia->share('foo', $this->inertia->lazy(static function (): string {
+            return 'bar';
+        }));
+
+        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertSame([], $data['props']);
+    }
+
+    public function testPartialData(): void
+    {
+        $this->inertia->share('foo', $this->inertia->lazy(static function (): string {
+            return 'bar';
+        }));
+
+        $this->inertia->share('baz', 'foobar');
+
+        $response = $this->get(
+            'TestController',
+            null,
+            [
+                'X-Inertia' => 'true',
+                'X-Inertia-Partial-Data' => 'foo',
+                'X-Inertia-Partial-Component' => 'Dashboard'
+            ]
+        );
+
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(['foo' => 'bar'], $data['props']);
@@ -101,6 +143,7 @@ class InertiaTest extends FunctionalTest
     {
         $this->inertia->viewData('foo', 'bar');
 
+        $this->assertSame('bar', $this->inertia->getViewData('foo'));
         $this->assertSame(['foo' => 'bar'], $this->inertia->getViewData());
     }
 
@@ -122,20 +165,20 @@ class InertiaTest extends FunctionalTest
             'null'                  => null,
             'true'                  => true,
             'false'                 => false,
-            'object'                => new \DateTime(),
-            'empty_object'          => new \stdClass(),
-            'iterable_object'       => new \ArrayObject([1, 2, 3]),
-            'empty_iterable_object' => new \ArrayObject(),
+            'object'                => new DateTime(),
+            'empty_object'          => new stdClass(),
+            'iterable_object'       => new ArrayObject([1, 2, 3]),
+            'empty_iterable_object' => new ArrayObject(),
             'array'                 => [1, 2, 3],
             'empty_array'           => [],
-            'associative_array'     => ['foo' => 'bar']
+            'associative_array'     => ['foo' => 'bar'],
         ];
 
         foreach ($props as $key => $value) {
             $this->inertia->share($key, $value);
         }
 
-        $response = $this->get('TestController', null, ['X-Inertia' => true]);
+        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
         $data = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
         $responseProps = (array) $data->props;
 
@@ -152,5 +195,40 @@ class InertiaTest extends FunctionalTest
         $this->assertIsArray($responseProps['array']);
         $this->assertIsArray($responseProps['empty_array']);
         $this->assertIsObject($responseProps['associative_array']);
+    }
+
+    public function testLocationResponseDefault(): void
+    {
+        $response = $this->inertia->location('foo');
+
+        $this->assertInstanceOf(HTTPResponse::class, $response);
+        $this->assertSame($response->getStatusCode(), 302);
+        $this->assertSame($response->getHeader('location'), 'foo');
+    }
+
+    public function testLocationResponseRedirect(): void
+    {
+        $url = HTTPResponse::create()
+            ->addHeader('location', 'foo')
+            ->setStatusCode(302);
+
+        $response = $this->inertia->location($url);
+
+        $this->assertInstanceOf(HTTPResponse::class, $response);
+        $this->assertSame($response->getStatusCode(), 302);
+        $this->assertSame($response->getHeader('location'), 'foo');
+    }
+
+    public function testLocationResponseConflict(): void
+    {
+        $request = (new HTTPRequest('GET', '/'))
+            ->addHeader('X-Inertia', 'true');
+
+        Controller::curr()->setRequest($request);
+        $response = $this->inertia->location('foo');
+
+        $this->assertInstanceOf(HTTPResponse::class, $response);
+        $this->assertSame($response->getStatusCode(), 409);
+        $this->assertSame($response->getHeader('X-Inertia-Location'), 'foo');
     }
 }

@@ -23,7 +23,7 @@ class Inertia
     private static string $root_view = 'Page';
 
     /**
-     * The location of your manifest file, used for versioning.
+     * The location of your manifest file, used for versioning. Must include a leading slash.
      *
      * @config
      */
