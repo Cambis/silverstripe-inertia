@@ -23,7 +23,14 @@ class Inertia
     private static string $root_view = 'Page';
 
     /**
-     * The location of your manifest file, used for versioning. Must include a leading slash.
+     * The location of your external manifest file, used for versioning.
+     * 
+     * @config
+     */
+    private static ?string $asset_url = null;
+
+    /**
+     * The location of your local manifest file, used for versioning. Must include a leading slash.
      *
      * @config
      */
@@ -95,6 +102,11 @@ class Inertia
     public function getRootView(): string
     {
         return static::config()->get('root_view');
+    }
+
+    public function getAssetURL(): ?string
+    {
+        return static::config()->get('asset_url');
     }
 
     public function getManifestFile(): ?string

@@ -15,14 +15,20 @@ class InertiaMiddleware implements HTTPMiddleware
 {
     use Injectable;
 
-    public function version(?string $manifestFile): ?string
+    public function version(HTTPRequest $request): ?string
     {
-        if (!$manifestFile) {
+        /** @var Inertia $inertia */
+        $inertia = Injector::inst()->get(Inertia::class);
+
+        if ($inertia->getAssetURL()) {
+            return md5($inertia->getAssetURL());
+        }
+
+        if (!$inertia->getManifestFile()) {
             return null;
         }
 
-        $manifestPath = Controller::join_links(Director::baseFolder(), $manifestFile);
-
+        $manifestPath = Controller::join_links(Director::baseFolder(), $inertia->getManifestFile());
         $manifestFileMd5 = '';
 
         if (file_exists($manifestPath)) {
@@ -44,8 +50,8 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        $inertia->version(function () use ($inertia) {
-            return $this->version($inertia->getManifestFile());
+        $inertia->version(function () use ($request) {
+            return $this->version($request);
         });
 
         /** @var HTTPResponse $response */
