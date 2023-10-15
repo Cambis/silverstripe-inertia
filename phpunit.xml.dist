@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/silverstripe/framework/tests/bootstrap.php" colors="true">
+<phpunit
+  bootstrap="vendor/silverstripe/cms/tests/bootstrap.php"
+  colors="true"
+  backupGlobals="false"
+  backupStaticAttributes="false"
+  beStrictAboutChangesToGlobalState="true"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutTestsThatDoNotTestAnything="true"
+  beStrictAboutTodoAnnotatedTests="true"
+  failOnRisky="true"
+  failOnWarning="true"
+>
 	<testsuites>
 		<testsuite name="Default">
 			<directory>tests/php</directory>
 		</testsuite>
 	</testsuites>
+  <coverage>
+    <exclude>
+      <directory suffix=".php">vendor/</directory>
+    </exclude>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </coverage>
 </phpunit>

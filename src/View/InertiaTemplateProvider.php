@@ -10,6 +10,9 @@ use SilverStripe\View\TemplateGlobalProvider;
 
 class InertiaTemplateProvider implements TemplateGlobalProvider
 {
+    /**
+     * @return array<string, array<string, string>|string>
+     */
     public static function get_template_global_variables(): array
     {
         return [

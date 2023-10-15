@@ -9,7 +9,7 @@ class LazyPropTest extends SapphireTest
 {
     public function testInvoke(): void
     {
-        $lazyProp = LazyProp::create(function () {
+        $lazyProp = LazyProp::create(static function () {
             return 'A lazy value';
         });
 

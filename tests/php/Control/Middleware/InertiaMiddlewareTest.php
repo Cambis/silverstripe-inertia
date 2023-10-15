@@ -4,9 +4,9 @@ namespace Cambis\Inertia\Tests\Control\Middleware;
 
 use Cambis\Inertia\Control\Middleware\InertiaMiddleware;
 use Cambis\Inertia\Inertia;
-use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 
@@ -14,21 +14,15 @@ class InertiaMiddlewareTest extends SapphireTest
 {
     protected Inertia $inertia;
 
-    /**
-     * @var InertiaMiddleware&MockObject
-     */
-    protected $middleware;
+    protected InertiaMiddleware $middleware;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->inertia = Injector::inst()->get(Inertia::class);
-        $this->middleware = $this->getMockBuilder(InertiaMiddleware::class)
-            ->setMethods(['version'])
-            ->getMock();
-
-        $this->middleware->expects($this->any())->method('version')->willReturn('foo');
+        Config::modify()->set(Inertia::class, 'manifest_file', '/tests/php/InertiaTest/test-manifest.json');
+        $this->middleware = InertiaMiddleware::create();
     }
 
     public function testPassThroughResponse(): void
@@ -36,7 +30,7 @@ class InertiaMiddlewareTest extends SapphireTest
         $request = new HTTPRequest('GET', '/');
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
             return $response;
         };
 
@@ -49,15 +43,13 @@ class InertiaMiddlewareTest extends SapphireTest
 
     public function testInertiaResponse(): void
     {
-        $this->middleware->expects($this->once())->method('version');
-
         $request = (new HTTPRequest('GET', '/'))
-            ->addHeader('X-Inertia', true)
-            ->addHeader('X-Inertia-Version', 'foo');
+            ->addHeader('X-Inertia', 'true')
+            ->addHeader('X-Inertia-Version', 'd41d8cd98f00b204e9800998ecf8427e');
 
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
             return $response;
         };
 
@@ -65,8 +57,12 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame($result->getStatusCode(), 200);
+        $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');
     }
 
+    /**
+     * @return array<array<string>>
+     */
     public function inertiaRedirectProvider(): array
     {
         return [
@@ -82,13 +78,13 @@ class InertiaMiddlewareTest extends SapphireTest
     public function testInertiaRedirect(string $httpMethod): void
     {
         $request = (new HTTPRequest($httpMethod, '/'))
-            ->addHeader('X-Inertia', true)
-            ->addHeader('X-Inertia-Version', 'foo');
+            ->addHeader('X-Inertia', 'true')
+            ->addHeader('X-Inertia-Version', 'd41d8cd98f00b204e9800998ecf8427e');
 
         $response = HTTPResponse::create()
             ->setStatusCode(302);
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
             return $response;
         };
 
@@ -96,19 +92,18 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame($result->getStatusCode(), 303);
+        $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');
     }
 
-    public function testInertiaVersion(): void
+    public function testInertiaVersionManifest(): void
     {
-        $this->middleware->expects($this->once())->method('version');
-
         $request = (new HTTPRequest('GET', '/'))
-            ->addHeader('X-Inertia', true)
-            ->addHeader('X-Inertia-Version', 'bar');
+            ->addHeader('X-Inertia', 'true')
+            ->addHeader('X-Inertia-Version', 'busted');
 
         $response = HTTPResponse::create();
 
-        $delegate = function ($request) use ($response) {
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
             return $response;
         };
 
@@ -117,5 +112,42 @@ class InertiaMiddlewareTest extends SapphireTest
         $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame(409, $result->getStatusCode());
         $this->assertSame($request->getUrl(), $result->getHeader('X-Inertia-Location'));
+        $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');
+    }
+
+    public function testInertiaVersionNoManifest(): void
+    {
+        Config::modify()->set(Inertia::class, 'manifest_file', null);
+
+        $request = (new HTTPRequest('GET', '/'))
+            ->addHeader('X-Inertia', 'true');
+
+        $response = HTTPResponse::create();
+
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
+            return $response;
+        };
+
+        $this->middleware->process($request, $delegate);
+
+        $this->assertEmpty($this->inertia->getVersion());
+    }
+
+    public function testInertiaVersionNonExistentManifest(): void
+    {
+        Config::modify()->set(Inertia::class, 'manifest_file', '/this/file/does/not/exist.json');
+
+        $request = (new HTTPRequest('GET', '/'))
+            ->addHeader('X-Inertia', 'true');
+
+        $response = HTTPResponse::create();
+
+        $delegate = static function (HTTPRequest $request) use ($response): HTTPResponse {
+            return $response;
+        };
+
+        $this->middleware->process($request, $delegate);
+
+        $this->assertEmpty($this->inertia->getVersion());
     }
 }

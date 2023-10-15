@@ -1,0 +1,9 @@
+includes:
+  - vendor/syntro/silverstripe-phpstan/phpstan.neon
+parameters:
+  ignoreErrors:
+    - '#Property [a-zA-Z0-9\\_]+::\$(dependencies|extensions) type has no value type specified in iterable type array.#'
+  level: 8
+  paths:
+    - src
+    - tests

@@ -8,18 +8,18 @@ class LazyProp
 {
     use Injectable;
 
-    /** @var callable|string|array */
-    private mixed $callback;
+    /** @var callable(): mixed */
+    private $callback;
 
     /**
-     * @param callable|string|array $callback
+     * @param callable(): mixed $callback
      */
     public function __construct(mixed $callback)
     {
         $this->callback = $callback;
     }
 
-    public function __invoke()
+    public function __invoke(): mixed
     {
         return call_user_func($this->callback);
     }

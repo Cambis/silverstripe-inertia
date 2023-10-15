@@ -3,6 +3,8 @@
 namespace Cambis\Inertia\Control\Middleware;
 
 use Cambis\Inertia\Inertia;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
@@ -13,19 +15,31 @@ class InertiaMiddleware implements HTTPMiddleware
 {
     use Injectable;
 
-    public function version(?string $manifestFile): ?string
+    public function version(HTTPRequest $request): ?string
     {
-        if (!$manifestFile) {
+        /** @var Inertia $inertia */
+        $inertia = Injector::inst()->get(Inertia::class);
+
+        if ($inertia->getAssetURL()) {
+            return md5($inertia->getAssetURL());
+        }
+
+        if (!$inertia->getManifestFile()) {
             return null;
         }
 
-        $manifestPath = BASE_PATH . $manifestFile;
+        $manifestPath = Controller::join_links(Director::baseFolder(), $inertia->getManifestFile());
+        $manifestFileMd5 = '';
 
-        if (file_exists($manifestPath ?? '')) {
-            return md5_file($manifestPath ?? '');
+        if (file_exists($manifestPath)) {
+            $manifestFileMd5 = md5_file($manifestPath);
         }
 
-        return null;
+        if (!is_string($manifestFileMd5)) {
+            return null;
+        }
+
+        return $manifestFileMd5;
     }
 
     /**
@@ -36,8 +50,8 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        $inertia->version(function () use ($inertia) {
-            return $this->version($inertia->getManifestFile());
+        $inertia->version(function () use ($request) {
+            return $this->version($request);
         });
 
         /** @var HTTPResponse $response */

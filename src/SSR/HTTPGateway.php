@@ -28,22 +28,22 @@ class HTTPGateway
 
     public function dispatch(string $page): ?Response
     {
+        if (!$this->client instanceof Client) {
+            return null;
+        }
+
         try {
             $response = $this->client->post(
                 'render',
                 [
-                    'json' => json_decode(html_entity_decode($page)),
+                    'json' => json_decode(html_entity_decode($page), null, 512, JSON_THROW_ON_ERROR),
                 ]
             );
         } catch (GuzzleException) {
             return null;
         }
 
-        if (is_null($response)) {
-            return null;
-        }
-
-        $content = json_decode($response->getBody()->getContents(), true);
+        $content = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!$content || !is_array($content)) {
             return null;
