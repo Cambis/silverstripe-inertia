@@ -24,7 +24,7 @@ class Inertia
 
     /**
      * The location of your external manifest file, used for versioning.
-     * 
+     *
      * @config
      */
     private static ?string $asset_url = null;
