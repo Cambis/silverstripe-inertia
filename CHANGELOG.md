@@ -1,5 +1,11 @@
 # silverstripe-inertia
 
+## 0.3.0
+
+### Minor Changes
+
+- 245198b: Update test coverage and documentation
+
 ## 0.2.0
 
 ### Minor Changes
