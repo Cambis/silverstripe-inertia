@@ -21,16 +21,17 @@ use function substr;
 use const FRAMEWORK_DIR;
 use const JSON_THROW_ON_ERROR;
 
-class InertiaTest extends FunctionalTest
+final class InertiaTest extends FunctionalTest
 {
-    protected Inertia $inertia;
-
     /**
      * @var string[]
+     * @phpstan-ignore-next-line
      */
     protected static $extra_controllers = [
         TestController::class,
     ];
+
+    private Inertia $inertia;
 
     protected function setUp(): void
     {
@@ -54,7 +55,6 @@ class InertiaTest extends FunctionalTest
     {
         $response = $this->get('TestController');
 
-        $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 200);
         $this->assertNull($response->getHeader('X-Inertia'));
         $this->assertSame('text/html; charset=utf-8', $response->getHeader('Content-Type'));
@@ -71,7 +71,6 @@ class InertiaTest extends FunctionalTest
             'X-Inertia' => 'true',
         ]);
 
-        $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 200);
         $this->assertNotNull($response->getHeader('X-Inertia'));
         $this->assertSame('application/json', $response->getHeader('Accept'));
@@ -242,7 +241,6 @@ class InertiaTest extends FunctionalTest
     {
         $response = $this->inertia->location('foo');
 
-        $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 302);
         $this->assertSame($response->getHeader('location'), 'foo');
     }
@@ -255,7 +253,6 @@ class InertiaTest extends FunctionalTest
 
         $response = $this->inertia->location($url);
 
-        $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 302);
         $this->assertSame($response->getHeader('location'), 'foo');
     }
@@ -268,7 +265,6 @@ class InertiaTest extends FunctionalTest
         Controller::curr()->setRequest($request);
         $response = $this->inertia->location('foo');
 
-        $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 409);
         $this->assertSame($response->getHeader('X-Inertia-Location'), 'foo');
     }

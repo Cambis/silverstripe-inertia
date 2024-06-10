@@ -1,0 +1,14 @@
+<?php
+
+namespace SilverStripe\Control;
+
+class HTTPResponse
+{
+    /**
+     * @param string $header
+     * @return string|null
+     */
+    public function getHeader($header)
+    {
+    }
+}

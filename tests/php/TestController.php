@@ -11,15 +11,12 @@ use SilverStripe\Dev\TestOnly;
 /**
  * @mixin InertiaPageControllerExtension
  */
-class TestController extends Controller implements TestOnly
+final class TestController extends Controller implements TestOnly
 {
-    /**
-     * @config
-     */
     private static string $url_segment = 'TestController';
 
     /**
-     * @config
+     * @var array<class-string>
      */
     private static array $extensions = [
         InertiaPageControllerExtension::class,
@@ -30,6 +27,6 @@ class TestController extends Controller implements TestOnly
         $props = $request->getVar('props') ?? [];
         $viewData = $request->getVar('viewData') ?? [];
 
-        return $this->inertia->render('Dashboard', $props, $viewData);
+        return $this->inertia->render('Dashboard', (array) $props, (array) $viewData);
     }
 }

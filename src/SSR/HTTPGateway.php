@@ -46,7 +46,7 @@ readonly class HTTPGateway
 
         $content = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
-        if (!$content || !is_array($content)) {
+        if ($content === null || $content === '' || !is_array($content)) {
             return null;
         }
 

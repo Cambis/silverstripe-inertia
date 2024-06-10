@@ -8,7 +8,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\View\SSViewer;
 
-class InertiaTemplateProviderTest extends SapphireTest
+final class InertiaTemplateProviderTest extends SapphireTest
 {
     /**
      * @return array<array<string>>

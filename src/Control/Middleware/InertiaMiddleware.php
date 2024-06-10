@@ -3,6 +3,7 @@
 namespace Cambis\Inertia\Control\Middleware;
 
 use Cambis\Inertia\Inertia;
+use Override;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
@@ -25,11 +26,11 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        if ($inertia->getAssetURL()) {
+        if ($inertia->getAssetURL() !== null) {
             return md5($inertia->getAssetURL());
         }
 
-        if (!$inertia->getManifestFile()) {
+        if ($inertia->getManifestFile() === null) {
             return null;
         }
 
@@ -47,6 +48,7 @@ class InertiaMiddleware implements HTTPMiddleware
         return $manifestFileMd5;
     }
 
+    #[Override]
     public function process(HTTPRequest $request, callable $delegate)
     {
         /** @var Inertia $inertia */
@@ -59,7 +61,7 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var HTTPResponse $response */
         $response = $delegate($request);
 
-        if (!$request->getHeader('X-Inertia')) {
+        if ($request->getHeader('X-Inertia') === null) {
             return $response;
         }
 
@@ -69,7 +71,7 @@ class InertiaMiddleware implements HTTPMiddleware
                 ->addHeader('X-Inertia-Location', $request->getURL());
         }
 
-        if ($response->getStatusCode() === 302 && in_array($request->httpMethod(), ['PUT', 'PATCH', 'DELETE'])) {
+        if ($response->getStatusCode() === 302 && in_array($request->httpMethod(), ['PUT', 'PATCH', 'DELETE'], true)) {
             $response->setStatusCode(303);
         }
 

@@ -10,11 +10,11 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 
-class InertiaMiddlewareTest extends SapphireTest
+final class InertiaMiddlewareTest extends SapphireTest
 {
-    protected Inertia $inertia;
+    private Inertia $inertia;
 
-    protected InertiaMiddleware $middleware;
+    private InertiaMiddleware $middleware;
 
     protected function setUp(): void
     {
@@ -36,7 +36,6 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $result = $this->middleware->process($request, $delegate);
 
-        $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame($result->getStatusCode(), 200);
         $this->assertNull($result->getHeader('X-Inertia'));
     }
@@ -55,7 +54,6 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $result = $this->middleware->process($request, $delegate);
 
-        $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame($result->getStatusCode(), 200);
         $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');
     }
@@ -90,7 +88,6 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $result = $this->middleware->process($request, $delegate);
 
-        $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame($result->getStatusCode(), 303);
         $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');
     }
@@ -109,7 +106,6 @@ class InertiaMiddlewareTest extends SapphireTest
 
         $result = $this->middleware->process($request, $delegate);
 
-        $this->assertInstanceOf(HTTPResponse::class, $result);
         $this->assertSame(409, $result->getStatusCode());
         $this->assertSame($request->getUrl(), $result->getHeader('X-Inertia-Location'));
         $this->assertSame($this->inertia->getVersion(), 'd41d8cd98f00b204e9800998ecf8427e');

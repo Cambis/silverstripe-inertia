@@ -40,36 +40,26 @@ class Inertia
 
     /**
      * The root template of your application, defaults to 'Page'.
-     *
-     * @config
      */
     private static string $root_view = 'Page';
 
     /**
      * The location of your external manifest file, used for versioning.
-     *
-     * @config
      */
     private static ?string $asset_url = null;
 
     /**
      * The location of your local manifest file, used for versioning. Must include a leading slash.
-     *
-     * @config
      */
     private static ?string $manifest_file = null;
 
     /**
      * True if using SSR.
-     *
-     * @config
      */
     private static bool $ssr_enabled = false;
 
     /**
      * The location of the SSR host.
-     *
-     * @config
      */
     private static string $ssr_host = 'http://127.0.0.1:13714';
 
@@ -80,7 +70,7 @@ class Inertia
 
     public function getShared(?string $key = null): mixed
     {
-        if ($key) {
+        if ($key !== null) {
             return $this->sharedProps[$key] ?? null;
         }
 
@@ -94,7 +84,7 @@ class Inertia
 
     public function getViewData(?string $key = null): mixed
     {
-        if ($key) {
+        if ($key !== null) {
             return $this->sharedViewData[$key] ?? null;
         }
 
@@ -154,16 +144,13 @@ class Inertia
         return LazyProp::create($callback);
     }
 
-    /**
-     * @param string|HTTPResponse $url
-     */
-    public function location(mixed $url): HTTPResponse
+    public function location(HTTPResponse|string $url): HTTPResponse
     {
-        if ($url instanceof HTTPResponse && $url->isRedirect()) {
+        if ($url instanceof HTTPResponse && $url->isRedirect() && $url->getHeader('location') !== null) {
             $url = $url->getHeader('location');
         }
 
-        if ($this->getRequest()->getHeader('X-Inertia')) {
+        if ($this->getRequest()->getHeader('X-Inertia') !== null) {
             return HTTPResponse::create()
                 ->setStatusCode(409)
                 ->addHeader('X-Inertia-Location', $url);
@@ -201,7 +188,7 @@ class Inertia
         $url ??= '/' . $request->getURL();
         $only = array_filter(explode(',', $request->getHeader('X-Inertia-Partial-Data') ?? ''));
 
-        $props = $only && $request->getHeader('X-Inertia-Partial-Component') === $component
+        $props = $only !== [] && $request->getHeader('X-Inertia-Partial-Component') === $component
             ? self::array_only($props, $only)
             : array_filter($props, static function ($prop): bool {
                 return !($prop instanceof LazyProp);
@@ -223,7 +210,7 @@ class Inertia
             'version' => $version,
         ], JSON_THROW_ON_ERROR);
 
-        if ($request->getHeader('X-Inertia')) {
+        if ($request->getHeader('X-Inertia') !== null) {
             return HTTPResponse::create()
                 ->addHeader('Vary', 'Accept')
                 ->addHeader('X-Inertia', 'true')

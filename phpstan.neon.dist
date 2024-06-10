@@ -9,6 +9,8 @@ parameters:
       - stubs/Psr/Container/ContainerInterface.stub
       - stubs/Psr/Container/NotFoundExceptionInterface.stub
       - stubs/SilverStripe/Core/Injector/Injector.stub
+      - stubs/SilverStripe/Control/HTTPRequest.stub
+      - stubs/SilverStripe/Control/HTTPResponse.stub
   ignoreErrors:
     -
       messages:
@@ -19,3 +21,33 @@ parameters:
         - '#Dynamic call to static method SilverStripe\\Dev\\FunctionalTest#'
         - '#Dynamic call to static method SilverStripe\\Dev\\SapphireTest#'
       reportUnmatched: false
+
+    -
+      message: "#^Method Cambis\\\\Inertia\\\\Inertia\\:\\:getAssetURL\\(\\) should return string\\|null but returns mixed\\.$#"
+      count: 1
+      path: src/Inertia.php
+
+    -
+      message: "#^Method Cambis\\\\Inertia\\\\Inertia\\:\\:getManifestFile\\(\\) should return string\\|null but returns mixed\\.$#"
+      count: 1
+      path: src/Inertia.php
+
+    -
+      message: "#^Method Cambis\\\\Inertia\\\\Inertia\\:\\:getRootView\\(\\) should return string but returns mixed\\.$#"
+      count: 1
+      path: src/Inertia.php
+
+    -
+      message: "#^Method Cambis\\\\Inertia\\\\Inertia\\:\\:getSsrHost\\(\\) should return string but returns mixed\\.$#"
+      count: 1
+      path: src/Inertia.php
+
+    -
+      message: "#^Cannot access offset 'props' on mixed\\.$#"
+      count: 5
+      path: tests/php/InertiaTest.php
+
+    -
+      message: "#^Cannot access property \\$props on mixed\\.$#"
+      count: 1
+      path: tests/php/InertiaTest.php
