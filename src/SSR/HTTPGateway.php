@@ -13,32 +13,26 @@ use function is_array;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
-class HTTPGateway
+readonly class HTTPGateway
 {
     use Injectable;
 
-    protected ?Client $client;
+    private Client $client;
 
-    public function __construct(?Client $client = null)
+    public function __construct()
     {
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        if ($client === null) {
-            $client = new Client([
-                'base_uri' => $inertia->getSsrHost(),
-            ]);
-        }
+        $client = new Client([
+            'base_uri' => $inertia->getSsrHost(),
+        ]);
 
         $this->client = $client;
     }
 
     public function dispatch(string $page): ?Response
     {
-        if (!$this->client instanceof Client) {
-            return null;
-        }
-
         try {
             $response = $this->client->post(
                 'render',
