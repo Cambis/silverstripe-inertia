@@ -9,6 +9,9 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\TemplateGlobalProvider;
 use function sprintf;
 
+/**
+ * @see \Cambis\Inertia\Tests\View\InertiaTemplateProviderTest
+ */
 class InertiaTemplateProvider implements TemplateGlobalProvider
 {
     /**

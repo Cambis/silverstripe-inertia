@@ -18,6 +18,9 @@ use function explode;
 use function json_encode;
 use const JSON_THROW_ON_ERROR;
 
+/**
+ * @see \Cambis\Inertia\Tests\InertiaTest
+ */
 class Inertia
 {
     use Configurable;

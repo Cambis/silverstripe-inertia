@@ -17,6 +17,9 @@ use function is_string;
 use function md5;
 use function md5_file;
 
+/**
+ * @see \Cambis\Inertia\Tests\Control\Middleware\InertiaMiddlewareTest
+ */
 class InertiaMiddleware implements HTTPMiddleware
 {
     use Injectable;

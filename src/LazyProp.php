@@ -5,6 +5,9 @@ namespace Cambis\Inertia;
 use SilverStripe\Core\Injector\Injectable;
 use function call_user_func;
 
+/**
+ * @see \Cambis\Inertia\Tests\LazyPropTest
+ */
 readonly class LazyProp
 {
     use Injectable;
