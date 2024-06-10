@@ -14,6 +14,12 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\View\SSViewer;
 use stdClass;
+use function http_build_query;
+use function json_decode;
+use function strlen;
+use function substr;
+use const FRAMEWORK_DIR;
+use const JSON_THROW_ON_ERROR;
 
 class InertiaTest extends FunctionalTest
 {
@@ -61,7 +67,9 @@ class InertiaTest extends FunctionalTest
 
     public function testJsonResponse(): void
     {
-        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $response = $this->get('TestController', null, [
+            'X-Inertia' => 'true',
+        ]);
 
         $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertSame($response->getStatusCode(), 200);
@@ -72,24 +80,43 @@ class InertiaTest extends FunctionalTest
 
     public function testProps(): void
     {
-        $params = http_build_query(['props' => ['foo' => 'bar']]);
-        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => 'true']);
+        $params = http_build_query([
+            'props' => [
+                'foo' => 'bar',
+            ],
+        ]);
+        $response = $this->get('TestController?' . $params, null, [
+            'X-Inertia' => 'true',
+        ]);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        $this->assertSame(['foo' => 'bar'], $data['props']);
+        $this->assertSame([
+            'foo' => 'bar',
+        ], $data['props']);
     }
 
     public function testSharedProps(): void
     {
         $this->inertia->share('baz', 'foobar');
 
-        $params = http_build_query(['props' => ['foo' => 'bar']]);
-        $response = $this->get('TestController?' . $params, null, ['X-Inertia' => 'true']);
+        $params = http_build_query([
+            'props' => [
+                'foo' => 'bar',
+            ],
+        ]);
+        $response = $this->get('TestController?' . $params, null, [
+            'X-Inertia' => 'true',
+        ]);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame('foobar', $this->inertia->getShared('baz'));
-        $this->assertSame(['baz' => 'foobar'], $this->inertia->getShared());
-        $this->assertSame(['baz' => 'foobar', 'foo' => 'bar'], $data['props']);
+        $this->assertSame([
+            'baz' => 'foobar',
+        ], $this->inertia->getShared());
+        $this->assertSame([
+            'baz' => 'foobar',
+            'foo' => 'bar',
+        ], $data['props']);
     }
 
     public function testClosureProps(): void
@@ -98,10 +125,14 @@ class InertiaTest extends FunctionalTest
             return 'bar';
         });
 
-        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $response = $this->get('TestController', null, [
+            'X-Inertia' => 'true',
+        ]);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        $this->assertSame(['foo' => 'bar'], $data['props']);
+        $this->assertSame([
+            'foo' => 'bar',
+        ], $data['props']);
     }
 
     public function testLazyProps(): void
@@ -110,7 +141,9 @@ class InertiaTest extends FunctionalTest
             return 'bar';
         }));
 
-        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $response = $this->get('TestController', null, [
+            'X-Inertia' => 'true',
+        ]);
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame([], $data['props']);
@@ -130,13 +163,15 @@ class InertiaTest extends FunctionalTest
             [
                 'X-Inertia' => 'true',
                 'X-Inertia-Partial-Data' => 'foo',
-                'X-Inertia-Partial-Component' => 'Dashboard'
+                'X-Inertia-Partial-Component' => 'Dashboard',
             ]
         );
 
         $data = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        $this->assertSame(['foo' => 'bar'], $data['props']);
+        $this->assertSame([
+            'foo' => 'bar',
+        ], $data['props']);
     }
 
     public function testViewData(): void
@@ -144,7 +179,9 @@ class InertiaTest extends FunctionalTest
         $this->inertia->viewData('foo', 'bar');
 
         $this->assertSame('bar', $this->inertia->getViewData('foo'));
-        $this->assertSame(['foo' => 'bar'], $this->inertia->getViewData());
+        $this->assertSame([
+            'foo' => 'bar',
+        ], $this->inertia->getViewData());
     }
 
     public function testVersion(): void
@@ -159,26 +196,30 @@ class InertiaTest extends FunctionalTest
     public function testTypesArePreserved(): void
     {
         $props = [
-            'integer'               => 123,
-            'float'                 => 1.23,
-            'string'                => 'foo',
-            'null'                  => null,
-            'true'                  => true,
-            'false'                 => false,
-            'object'                => new DateTime(),
-            'empty_object'          => new stdClass(),
-            'iterable_object'       => new ArrayObject([1, 2, 3]),
+            'integer' => 123,
+            'float' => 1.23,
+            'string' => 'foo',
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            'object' => new DateTime(),
+            'empty_object' => new stdClass(),
+            'iterable_object' => new ArrayObject([1, 2, 3]),
             'empty_iterable_object' => new ArrayObject(),
-            'array'                 => [1, 2, 3],
-            'empty_array'           => [],
-            'associative_array'     => ['foo' => 'bar'],
+            'array' => [1, 2, 3],
+            'empty_array' => [],
+            'associative_array' => [
+                'foo' => 'bar',
+            ],
         ];
 
         foreach ($props as $key => $value) {
             $this->inertia->share($key, $value);
         }
 
-        $response = $this->get('TestController', null, ['X-Inertia' => 'true']);
+        $response = $this->get('TestController', null, [
+            'X-Inertia' => 'true',
+        ]);
         $data = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
         $responseProps = (array) $data->props;
 

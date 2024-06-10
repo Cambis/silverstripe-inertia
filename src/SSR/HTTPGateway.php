@@ -7,6 +7,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use function html_entity_decode;
+use function implode;
+use function is_array;
+use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
 class HTTPGateway
 {
@@ -19,8 +24,10 @@ class HTTPGateway
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        if (is_null($client)) {
-            $client = new Client(['base_uri' => $inertia->getSsrHost()]);
+        if ($client === null) {
+            $client = new Client([
+                'base_uri' => $inertia->getSsrHost(),
+            ]);
         }
 
         $this->client = $client;

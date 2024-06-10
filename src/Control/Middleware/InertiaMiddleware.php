@@ -10,6 +10,11 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use function file_exists;
+use function in_array;
+use function is_string;
+use function md5;
+use function md5_file;
 
 class InertiaMiddleware implements HTTPMiddleware
 {
@@ -42,9 +47,6 @@ class InertiaMiddleware implements HTTPMiddleware
         return $manifestFileMd5;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function process(HTTPRequest $request, callable $delegate)
     {
         /** @var Inertia $inertia */

@@ -7,6 +7,7 @@ use Cambis\Inertia\SSR\HTTPGateway;
 use Cambis\Inertia\SSR\Response;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\TemplateGlobalProvider;
+use function sprintf;
 
 class InertiaTemplateProvider implements TemplateGlobalProvider
 {

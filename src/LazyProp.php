@@ -3,12 +3,15 @@
 namespace Cambis\Inertia;
 
 use SilverStripe\Core\Injector\Injectable;
+use function call_user_func;
 
 class LazyProp
 {
     use Injectable;
 
-    /** @var callable(): mixed */
+    /**
+     * @var callable(): mixed
+     */
     private $callback;
 
     /**

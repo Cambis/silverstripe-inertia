@@ -9,11 +9,34 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\View\ArrayData;
+use function array_filter;
+use function array_flip;
+use function array_intersect_key;
+use function array_walk_recursive;
+use function call_user_func;
+use function explode;
+use function json_encode;
+use const JSON_THROW_ON_ERROR;
 
 class Inertia
 {
     use Configurable;
     use Injectable;
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $sharedProps = [];
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $sharedViewData = [];
+
+    /**
+     * @var callable|string|null
+     */
+    protected mixed $version = null;
 
     /**
      * The root template of your application, defaults to 'Page'.
@@ -49,19 +72,6 @@ class Inertia
      * @config
      */
     private static string $ssr_host = 'http://127.0.0.1:13714';
-
-    /**
-     * @var array<string, mixed>
-     */
-    protected array $sharedProps = [];
-
-    /**
-     * @var array<string, mixed>
-     */
-    protected array $sharedViewData = [];
-
-    /** @var callable|string|null */
-    protected mixed $version = null;
 
     public function share(string $key, mixed $value = null): void
     {
@@ -210,7 +220,7 @@ class Inertia
             'component' => $component,
             'props' => $props,
             'url' => $url,
-            'version' => $version
+            'version' => $version,
         ], JSON_THROW_ON_ERROR);
 
         if ($request->getHeader('X-Inertia')) {
@@ -225,7 +235,10 @@ class Inertia
         return HTTPResponse::create()
             ->setBody(Controller::curr()->renderWith(
                 $this->getRootView(),
-                ['PageData' => $page, 'ViewData' => ArrayData::create($viewData)]
+                [
+                    'PageData' => $page,
+                    'ViewData' => ArrayData::create($viewData),
+                ]
             ));
     }
 
