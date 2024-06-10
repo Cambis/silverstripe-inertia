@@ -1,9 +1,13 @@
-name: Publish
+name: Publish 🔖
 on:
   workflow_run:
-    workflows: [CI]
-    branches: [main]
-    types: [completed]
+    workflows:
+      - lint
+      - test
+    branches: 
+      - main
+    types:
+      - completed
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -27,8 +31,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          commit: "chore: versioning"
-          title: "chore: versioning"
+          commit: ":memo: ci: update changelog"
+          title: ":memo: ci: update changelog"
           publish: "echo 'versioned'"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

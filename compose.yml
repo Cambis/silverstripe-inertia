@@ -1,0 +1,48 @@
+services:
+  web:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: ./docker/tukutuku/Dockerfile
+      args:
+        - PHP_VERSION=8.3
+        - NODE_VERSION=lts
+    image: cambis/silverstripe-inertia/web:php8.3-nodelts
+    environment:
+      - SS_TRUSTED_PROXY_IPS=*
+      - SS_ENVIRONMENT_TYPE=dev
+      - SS_DATABASE_SERVER=mysql
+      - SS_DATABASE_NAME=SS_mysite
+      - SS_DATABASE_USERNAME=root
+      - SS_DATABASE_PASSWORD=
+      - SS_DEFAULT_ADMIN_USERNAME=admin
+      - SS_DEFAULT_ADMIN_PASSWORD=password
+      - SS_BASE_URL=${SS_BASE_URL:-https://localhost}
+    volumes:
+      - .:/app
+      - caddy_config:/config
+      - caddy_data:/data
+    ports:
+      - target: 80
+        published: ${HTTP_PORT:-80}
+        protocol: tcp
+      - target: 443
+        published: ${HTTPS_PORT:-443}
+        protocol: tcp
+      - target: 443
+        published: ${HTTP3_PORT:-443}
+        protocol: udp
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  mysql:
+  caddy_config:
+  caddy_data:
+  

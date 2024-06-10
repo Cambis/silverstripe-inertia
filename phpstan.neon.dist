@@ -1,9 +1,21 @@
-includes:
-  - vendor/syntro/silverstripe-phpstan/phpstan.neon
 parameters:
-  ignoreErrors:
-    - '#Property [a-zA-Z0-9\\_]+::\$(dependencies|extensions) type has no value type specified in iterable type array.#'
-  level: 8
+  level: 9
   paths:
+    - _config.php
     - src
     - tests
+  stubFiles:
+      - stubs/Psr/Container/ContainerExceptionInterface.stub
+      - stubs/Psr/Container/ContainerInterface.stub
+      - stubs/Psr/Container/NotFoundExceptionInterface.stub
+      - stubs/SilverStripe/Core/Injector/Injector.stub
+  ignoreErrors:
+    -
+      messages:
+        # Ignore configuration properties
+        - '#Static property .* is never read, only written#'
+        # Prefer dynamic calls in PHPUnit
+        - '#Dynamic call to static method PHPUnit\\Framework\\#'
+        - '#Dynamic call to static method SilverStripe\\Dev\\FunctionalTest#'
+        - '#Dynamic call to static method SilverStripe\\Dev\\SapphireTest#'
+      reportUnmatched: false
