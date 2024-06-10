@@ -14,17 +14,32 @@ env:
 
 jobs:
   test:
-    name: test
-    uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
-    with:
-      dynamic_matrix: false
-      simple_matrix: false
-      phplinting: false
-      endtoend: false
-      js: false
-      phpunit: false
-      extra_jobs: |
-        - php: '8.3'
-          db: mysql80
-          phpunit: true
-          phpunit_suite: all
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: SS_mysite
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - uses: ramsey/composer-install@v2
+
+      - run: vendor/bin/phpunit
+        env:
+          SS_DATABASE_SERVER: 127.0.0.1
+          SS_DATABASE_NAME: SS_mysite
+          SS_DATABASE_USERNAME: root
+          SS_DATABASE_PASSWORD: root
