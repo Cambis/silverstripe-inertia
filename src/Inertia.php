@@ -39,7 +39,7 @@ class Inertia
     /**
      * @var callable|string|null
      */
-    protected mixed $version = null;
+    protected $version = null;
 
     /**
      * The root template of your application, defaults to 'Page'.
@@ -66,12 +66,18 @@ class Inertia
      */
     private static string $ssr_host = 'http://127.0.0.1:13714';
 
-    public function share(string $key, mixed $value = null): void
+    /**
+     * @param mixed $value
+     */
+    public function share(string $key, $value = null): void
     {
         $this->sharedProps[$key] = $value;
     }
 
-    public function getShared(?string $key = null): mixed
+    /**
+     * @return mixed
+     */
+    public function getShared(?string $key = null)
     {
         if ($key !== null) {
             return $this->sharedProps[$key] ?? null;
@@ -80,12 +86,18 @@ class Inertia
         return $this->sharedProps;
     }
 
-    public function viewData(string $key, mixed $value = null): void
+    /**
+     * @param mixed $value
+     */
+    public function viewData(string $key, $value = null): void
     {
         $this->sharedViewData[$key] = $value;
     }
 
-    public function getViewData(?string $key = null): mixed
+    /**
+     * @return mixed
+     */
+    public function getViewData(?string $key = null)
     {
         if ($key !== null) {
             return $this->sharedViewData[$key] ?? null;
@@ -95,9 +107,9 @@ class Inertia
     }
 
     /**
-     * @param callable|string|null $version
+     * @param mixed $version
      */
-    public function version(mixed $version): void
+    public function version($version): void
     {
         $this->version = $version;
     }
@@ -147,7 +159,10 @@ class Inertia
         return LazyProp::create($callback);
     }
 
-    public function location(HTTPResponse|string $url): HTTPResponse
+    /**
+     * @param \SilverStripe\Control\HTTPResponse|string $url
+     */
+    public function location($url): HTTPResponse
     {
         if ($url instanceof HTTPResponse && $url->isRedirect() && $url->getHeader('location') !== null) {
             $url = $url->getHeader('location');
@@ -185,8 +200,8 @@ class Inertia
         array $viewData = [],
         ?string $url = null
     ): HTTPResponse {
-        $viewData = [...$this->sharedViewData, ...$viewData];
-        $props = [...$this->sharedProps, ...$props];
+        $viewData = array_merge($this->sharedViewData, $viewData);
+        $props = array_merge($this->sharedProps, $props);
         $request = $this->getRequest();
         $url ??= '/' . $request->getURL();
         $only = array_filter(explode(',', $request->getHeader('X-Inertia-Partial-Data') ?? ''));

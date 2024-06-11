@@ -1,1 +1,0 @@
-$InertiaBody($PageData)
