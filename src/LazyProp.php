@@ -8,19 +8,30 @@ use function call_user_func;
 /**
  * @see \Cambis\Inertia\Tests\LazyPropTest
  */
-readonly class LazyProp
+class LazyProp
 {
+    /**
+     * @readonly
+     * @var mixed
+     */
+    private $callback;
     use Injectable;
 
-    public function __construct(
+    /**
+     * @param mixed $callback
+     */
+    public function __construct($callback)
+    {
         /**
          * @var callable(): mixed
          */
-        private mixed $callback
-    ) {
+        $this->callback = $callback;
     }
 
-    public function __invoke(): mixed
+    /**
+     * @return mixed
+     */
+    public function __invoke()
     {
         return call_user_func($this->callback);
     }

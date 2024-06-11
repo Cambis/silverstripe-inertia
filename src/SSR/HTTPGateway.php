@@ -13,10 +13,13 @@ use function is_array;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
-readonly class HTTPGateway
+class HTTPGateway
 {
     use Injectable;
 
+    /**
+     * @readonly
+     */
     private Client $client;
 
     public function __construct()
@@ -40,7 +43,7 @@ readonly class HTTPGateway
                     'json' => json_decode(html_entity_decode($page), null, 512, JSON_THROW_ON_ERROR),
                 ]
             );
-        } catch (GuzzleException) {
+        } catch (GuzzleException $exception) {
             return null;
         }
 
