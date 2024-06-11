@@ -3,6 +3,7 @@
 namespace Cambis\Inertia\Control\Middleware;
 
 use Cambis\Inertia\Inertia;
+use Override;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
@@ -10,7 +11,15 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use function file_exists;
+use function in_array;
+use function is_string;
+use function md5;
+use function md5_file;
 
+/**
+ * @see \Cambis\Inertia\Tests\Control\Middleware\InertiaMiddlewareTest
+ */
 class InertiaMiddleware implements HTTPMiddleware
 {
     use Injectable;
@@ -20,11 +29,11 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        if ($inertia->getAssetURL()) {
+        if ($inertia->getAssetURL() !== null) {
             return md5($inertia->getAssetURL());
         }
 
-        if (!$inertia->getManifestFile()) {
+        if ($inertia->getManifestFile() === null) {
             return null;
         }
 
@@ -42,9 +51,7 @@ class InertiaMiddleware implements HTTPMiddleware
         return $manifestFileMd5;
     }
 
-    /**
-     * @inheritDoc
-     */
+    #[Override]
     public function process(HTTPRequest $request, callable $delegate)
     {
         /** @var Inertia $inertia */
@@ -57,7 +64,7 @@ class InertiaMiddleware implements HTTPMiddleware
         /** @var HTTPResponse $response */
         $response = $delegate($request);
 
-        if (!$request->getHeader('X-Inertia')) {
+        if ($request->getHeader('X-Inertia') === null) {
             return $response;
         }
 
@@ -67,7 +74,7 @@ class InertiaMiddleware implements HTTPMiddleware
                 ->addHeader('X-Inertia-Location', $request->getURL());
         }
 
-        if ($response->getStatusCode() === 302 && in_array($request->httpMethod(), ['PUT', 'PATCH', 'DELETE'])) {
+        if ($response->getStatusCode() === 302 && in_array($request->httpMethod(), ['PUT', 'PATCH', 'DELETE'], true)) {
             $response->setStatusCode(303);
         }
 

@@ -7,7 +7,11 @@ use Cambis\Inertia\SSR\HTTPGateway;
 use Cambis\Inertia\SSR\Response;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\TemplateGlobalProvider;
+use function sprintf;
 
+/**
+ * @see \Cambis\Inertia\Tests\View\InertiaTemplateProviderTest
+ */
 class InertiaTemplateProvider implements TemplateGlobalProvider
 {
     /**
@@ -17,22 +21,22 @@ class InertiaTemplateProvider implements TemplateGlobalProvider
     {
         return [
             'Inertia' => [
-                'method' => 'inertia_body',
+                'method' => 'inertiaBody',
                 'casting' => 'HTMLFragment',
             ],
             'InertiaBody' => [
-                'method' => 'inertia_body',
+                'method' => 'inertiaBody',
                 'casting' => 'HTMLFragment',
             ],
             'InertiaHead' => [
-                'method' => 'inertia_head',
+                'method' => 'inertiaHead',
                 'casting' => 'HTMLFragment',
             ],
-            'IsSSR' => 'is_ssr',
+            'IsSSR' => 'isSsr',
         ];
     }
 
-    public static function inertia_head(string $page): string
+    public static function inertiaHead(string $page): string
     {
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
@@ -51,7 +55,7 @@ class InertiaTemplateProvider implements TemplateGlobalProvider
         return '';
     }
 
-    public static function inertia_body(string $page): string
+    public static function inertiaBody(string $page): string
     {
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
@@ -73,7 +77,7 @@ class InertiaTemplateProvider implements TemplateGlobalProvider
         );
     }
 
-    public static function is_ssr(): bool
+    public static function isSsr(): bool
     {
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);

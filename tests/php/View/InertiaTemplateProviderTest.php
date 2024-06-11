@@ -8,7 +8,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\View\SSViewer;
 
-class InertiaTemplateProviderTest extends SapphireTest
+final class InertiaTemplateProviderTest extends SapphireTest
 {
     /**
      * @return array<array<string>>
@@ -57,9 +57,9 @@ class InertiaTemplateProviderTest extends SapphireTest
     public function testIsSSR(): void
     {
         Config::modify()->set(Inertia::class, 'ssr_enabled', true);
-        $this->assertTrue(InertiaTemplateProvider::is_ssr());
+        $this->assertTrue(InertiaTemplateProvider::isSsr());
 
         Config::modify()->set(Inertia::class, 'ssr_enabled', false);
-        $this->assertFalse(InertiaTemplateProvider::is_ssr());
+        $this->assertFalse(InertiaTemplateProvider::isSsr());
     }
 }

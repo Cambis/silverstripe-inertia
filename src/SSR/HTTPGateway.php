@@ -7,31 +7,32 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use function html_entity_decode;
+use function implode;
+use function is_array;
+use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
-class HTTPGateway
+readonly class HTTPGateway
 {
     use Injectable;
 
-    protected ?Client $client;
+    private Client $client;
 
-    public function __construct(?Client $client = null)
+    public function __construct()
     {
         /** @var Inertia $inertia */
         $inertia = Injector::inst()->get(Inertia::class);
 
-        if (is_null($client)) {
-            $client = new Client(['base_uri' => $inertia->getSsrHost()]);
-        }
+        $client = new Client([
+            'base_uri' => $inertia->getSsrHost(),
+        ]);
 
         $this->client = $client;
     }
 
     public function dispatch(string $page): ?Response
     {
-        if (!$this->client instanceof Client) {
-            return null;
-        }
-
         try {
             $response = $this->client->post(
                 'render',
@@ -45,7 +46,7 @@ class HTTPGateway
 
         $content = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
-        if (!$content || !is_array($content)) {
+        if ($content === null || $content === '' || !is_array($content)) {
             return null;
         }
 

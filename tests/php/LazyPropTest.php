@@ -5,7 +5,7 @@ namespace Cambis\Inertia\Tests;
 use Cambis\Inertia\LazyProp;
 use SilverStripe\Dev\SapphireTest;
 
-class LazyPropTest extends SapphireTest
+final class LazyPropTest extends SapphireTest
 {
     public function testInvoke(): void
     {
