@@ -1,5 +1,12 @@
 # silverstripe-inertia
 
+## 0.4.0
+
+### Minor Changes
+
+- 4dd0779: Update dependencies, github config and build chain
+- e09d562: Apply new coding standards
+
 ## 0.3.0
 
 ### Minor Changes
