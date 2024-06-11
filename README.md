@@ -314,3 +314,6 @@ Cambis\Inertia\Inertia:
 ```
 
 Check the [official documentation](https://inertiajs.com/server-side-rendering) for information on client-side setup.
+
+### Demo
+You can find a basic demo [here](https://github.com/Cambis/frankenphp-silverstripe-demo/tree/poc/inertia-demo)
