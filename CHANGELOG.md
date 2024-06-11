@@ -1,5 +1,11 @@
 # silverstripe-inertia
 
+## 0.4.1
+
+### Patch Changes
+
+- b558968: Fix for dynamic properties deprecation
+
 ## 0.4.0
 
 ### Minor Changes
